@@ -1,0 +1,40 @@
+name: Gerar APK - Vídeos+imagens
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar projeto
+        uses: actions/checkout@v4
+
+      - name: Extrair projeto
+        run: |
+          unzip -q VideosImagens-GitHub-Pronto.zip
+          test -f VideosImagens-GitHub-Pronto/settings.gradle.kts
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.13"
+
+      - name: Gerar APK
+        working-directory: VideosImagens-GitHub-Pronto
+        run: gradle assembleDebug
+
+      - name: Disponibilizar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Videos-imagens-APK
+          path: VideosImagens-GitHub-Pronto/app/build/outputs/apk/debug/app-debug.apk
